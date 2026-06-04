@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Punctuation Playground · SAT Punctuation, the fun way</title>
+<meta name="description" content="A playful, self-contained study & quiz app for mastering SAT-level punctuation: commas, semicolons, colons, dashes, apostrophes, and end punctuation." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..700&family=Spline+Sans:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #fdf3e3;
+    --bg-2: #fbe9cf;
+    --ink: #2a2118;
+    --ink-soft: #6b5d4a;
+    --card: #fffaf2;
+    --line: #2a2118;
+    --comma: #ff6b5e;
+    --semicolon: #12a594;
+    --colon: #7c5cff;
+    --dash: #ff9f1c;
+    --apostrophe: #2f80ed;
+    --end-punctuation: #2bb673;
+    --good: #2bb673;
+    --bad: #ff5a4d;
+    --shadow: 6px 6px 0 var(--line);
+    --shadow-sm: 3px 3px 0 var(--line);
+    --radius: 22px;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Spline Sans", system-ui, -apple-system, sans-serif;
+    --font-mono: "Space Mono", "SF Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255,159,28,0.10), transparent 38%),
+      radial-gradient(circle at 88% 12%, rgba(124,92,255,0.10), transparent 40%),
+      radial-gradient(circle at 78% 86%, rgba(18,165,148,0.10), transparent 42%),
+      radial-gradient(circle at 20% 90%, rgba(255,107,94,0.10), transparent 40%),
+      radial-gradient(var(--bg-2) 1.4px, transparent 1.4px);
+    background-size: auto, auto, auto, auto, 26px 26px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+    min-height: 100vh;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px clamp(16px, 4vw, 40px);
+    background: rgba(253,243,227,0.86);
+    backdrop-filter: blur(8px);
+    border-bottom: 3px solid var(--line);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .brand .logo {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(20px, 2.4vw, 28px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .brand .logo b { color: var(--comma); }
+  .brand .marks {
+    display: inline-flex;
+    gap: 2px;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 26px;
+    line-height: 1;
+  }
+  .brand .marks span { display: inline-block; animation: bob 2.6s ease-in-out infinite; }
+  .brand .marks span:nth-child(1){ color: var(--comma); animation-delay: 0s; }
+  .brand .marks span:nth-child(2){ color: var(--semicolon); animation-delay: .2s; }
+  .brand .marks span:nth-child(3){ color: var(--colon); animation-delay: .4s; }
+  .brand .marks span:nth-child(4){ color: var(--dash); animation-delay: .6s; }
+  @keyframes bob { 0%,100%{ transform: translateY(0) rotate(-4deg);} 50%{ transform: translateY(-6px) rotate(4deg);} }
+
+  nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 9px 16px;
+    border: 2.5px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--line); }
+  .nav-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--line); }
+  .nav-btn.active { background: var(--ink); color: #fff; }
+
+  /* ---------- Layout ---------- */
+  main { max-width: 980px; margin: 0 auto; padding: clamp(20px, 4vw, 44px) clamp(16px, 4vw, 28px) 80px; }
+  .view { display: none; animation: fadein .4s ease both; }
+  .view.active { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
+
+  /* ---------- Home ---------- */
+  .hero { text-align: center; margin: 14px 0 38px; }
+  .hero .kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    background: var(--dash);
+    color: var(--ink);
+    border: 2.5px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 14px;
+    box-shadow: var(--shadow-sm);
+    transform: rotate(-2deg);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(40px, 8vw, 78px);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+  .hero h1 .pop { position: relative; display: inline-block; }
+  .hero h1 .c1 { color: var(--comma); }
+  .hero h1 .c2 { color: var(--colon); }
+  .hero p.tag {
+    font-size: clamp(16px, 2.2vw, 20px);
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 760px){ .mode-grid { grid-template-columns: 1fr; } }
+
+  .mode-card {
+    position: relative;
+    text-align: left;
+    border: 3px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 24px 22px 22px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform .14s ease, box-shadow .14s ease;
+    overflow: hidden;
+  }
+  .mode-card:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 var(--line); }
+  .mode-card:active { transform: translate(2px,2px); box-shadow: 3px 3px 0 var(--line); }
+  .mode-card .emoji { font-size: 40px; display: block; margin-bottom: 12px; }
+  .mode-card h3 { font-family: var(--font-display); font-weight: 800; font-size: 26px; margin-bottom: 6px; }
+  .mode-card p { font-size: 14.5px; color: var(--ink-soft); }
+  .mode-card .ribbon {
+    position: absolute; top: 14px; right: -34px; transform: rotate(35deg);
+    background: var(--ink); color: #fff; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .1em; padding: 4px 40px;
+  }
+  .mode-card.study { background: linear-gradient(160deg, #fff6e6, var(--card)); }
+  .mode-card.practice { background: linear-gradient(160deg, #e9fbf4, var(--card)); }
+  .mode-card.challenge { background: linear-gradient(160deg, #fdeaf0, var(--card)); }
+  .mode-card .bar { height: 7px; border-radius: 999px; margin-top: 16px; border: 2px solid var(--line); }
+  .mode-card.study .bar { background: var(--dash); }
+  .mode-card.practice .bar { background: var(--semicolon); }
+  .mode-card.challenge .bar { background: var(--comma); }
+
+  .stats-strip {
+    display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+    margin-top: 34px;
+  }
+  .stat {
+    border: 2.5px solid var(--line); border-radius: 16px; background: var(--card);
+    padding: 12px 20px; box-shadow: var(--shadow-sm); text-align: center; min-width: 130px;
+  }
+  .stat .num { font-family: var(--font-display); font-weight: 900; font-size: 30px; line-height: 1; }
+  .stat .lbl { font-size: 12.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+
+  /* ---------- Section heading ---------- */
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .section-head h2 { font-family: var(--font-display); font-weight: 900; font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; }
+
+  /* ---------- Study ---------- */
+  .topic-tabs { display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 24px; }
+  .topic-tab {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-body); font-weight: 600; font-size: 14.5px;
+    padding: 9px 15px; border: 2.5px solid var(--line); border-radius: 999px;
+    background: var(--card); cursor: pointer; box-shadow: var(--shadow-sm);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .topic-tab:hover { transform: translate(-1px,-1px); }
+  .topic-tab .dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); }
+  .topic-tab.active { color: #fff; }
+  .topic-tab .check { font-size: 12px; opacity: 0; }
+  .topic-tab.done .check { opacity: 1; }
+
+  .lesson-head {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    border: 3px solid var(--line); border-radius: var(--radius);
+    padding: 20px 22px; box-shadow: var(--shadow); margin-bottom: 22px; position: relative; overflow: hidden;
+  }
+  .lesson-head .big-mark { font-family: var(--font-display); font-weight: 900; font-size: 72px; line-height: 0.8; color: #fff; -webkit-text-stroke: 3px var(--line); }
+  .lesson-head .lh-text h3 { font-family: var(--font-display); font-weight: 900; font-size: 30px; }
+  .lesson-head .lh-text p { color: var(--ink-soft); font-size: 15px; max-width: 620px; }
+
+  .rule-card {
+    border: 3px solid var(--line); border-radius: var(--radius);
+    background: var(--card); padding: 20px 22px; margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .rule-card .rule-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid var(--line);
+    font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-right: 10px;
+    color: #fff;
+  }
+  .rule-card h4 { font-family: var(--font-display); font-weight: 800; font-size: 20px; display: flex; align-items: center; margin-bottom: 8px; }
+  .rule-card .explain { font-size: 15px; color: var(--ink-soft); margin-bottom: 14px; }
+  .examples { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 620px){ .examples { grid-template-columns: 1fr; } }
+  .ex {
+    font-family: var(--font-mono); font-size: 13.5px; line-height: 1.5;
+    border: 2.5px solid var(--line); border-radius: 14px; padding: 12px 14px; position: relative;
+  }
+  .ex .ex-tag { position: absolute; top: -11px; left: 12px; font-family: var(--font-body); font-weight: 700; font-size: 12px; padding: 1px 9px; border: 2px solid var(--line); border-radius: 999px; background: var(--card); }
+  .ex.good { background: #e8f8f0; } .ex.good .ex-tag { color: var(--good); }
+  .ex.bad { background: #ffecea; } .ex.bad .ex-tag { color: var(--bad); }
+  .why { margin-top: 12px; font-size: 13.5px; color: var(--ink-soft); display: flex; gap: 8px; }
+  .why b { color: var(--ink); }
+  .mnemonic {
+    margin-top: 4px; border: 3px dashed var(--line); border-radius: var(--radius);
+    padding: 18px 22px; background: #fff7e0; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .mnemonic .bulb { font-size: 26px; }
+  .mnemonic .mtext b { font-family: var(--font-display); }
+
+  .lesson-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    font-family: var(--font-body); font-weight: 700; font-size: 16px;
+    padding: 13px 24px; border: 3px solid var(--line); border-radius: 999px;
+    background: var(--card); color: var(--ink); cursor: pointer;
+    box-shadow: var(--shadow-sm); transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--line); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--line); }
+  .btn.primary { background: var(--ink); color: #fff; }
+  .btn.big { font-size: 18px; padding: 15px 34px; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: var(--shadow-sm); }
+
+  /* ---------- Quiz setup ---------- */
+  .setup-panel { border: 3px solid var(--line); border-radius: var(--radius); background: var(--card); padding: 24px; box-shadow: var(--shadow); }
+  .setup-panel h3 { font-family: var(--font-display); font-weight: 800; font-size: 22px; margin-bottom: 6px; }
+  .setup-panel .hint { color: var(--ink-soft); font-size: 14px; margin-bottom: 16px; }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .chip {
+    font-family: var(--font-body); font-weight: 600; font-size: 14px;
+    padding: 8px 14px; border: 2.5px solid var(--line); border-radius: 999px;
+    background: var(--card); cursor: pointer; box-shadow: var(--shadow-sm);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .chip.active { background: var(--ink); color: #fff; }
+  .chip .dot { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--line); }
+
+  /* ---------- Quiz play ---------- */
+  .quiz-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .quiz-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pill {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    border: 2.5px solid var(--line); border-radius: 999px; padding: 6px 13px; background: var(--card);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .pill.lives { color: var(--comma); }
+  .pill.streak { color: var(--dash); }
+  .pill.score { color: var(--semicolon); }
+  .progress-track { height: 12px; border: 2.5px solid var(--line); border-radius: 999px; background: var(--card); overflow: hidden; margin-bottom: 4px; }
+  .progress-fill { height: 100%; width: 0; background: var(--semicolon); transition: width .35s ease; }
+
+  .timer-track { height: 8px; border-radius: 999px; background: #00000018; overflow: hidden; margin: 10px 0 0; }
+  .timer-fill { height: 100%; width: 100%; background: var(--dash); transition: width 1s linear; }
+  .timer-fill.low { background: var(--comma); }
+
+  .q-card { border: 3px solid var(--line); border-radius: var(--radius); background: var(--card); padding: 26px 24px; box-shadow: var(--shadow); margin-top: 14px; }
+  .q-topic-badge { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; border: 2px solid var(--line); border-radius: 999px; padding: 4px 11px; color: #fff; margin-bottom: 14px; }
+  .q-prompt { font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+  .q-sentence { font-family: var(--font-mono); font-size: clamp(16px, 2.4vw, 20px); line-height: 1.7; margin-bottom: 22px; }
+  .gap { display: inline-block; min-width: 38px; height: 1.1em; vertical-align: -2px; margin: 0 2px; border-bottom: 4px dotted var(--colon); border-radius: 2px; }
+  .fill { background: #fff1bf; border-radius: 5px; padding: 0 4px; box-shadow: inset 0 -6px 0 #ffe08a; font-weight: 700; }
+
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 620px){ .choices { grid-template-columns: 1fr; } }
+  .choice {
+    display: flex; align-items: center; gap: 12px; text-align: left;
+    font-family: var(--font-body); font-weight: 600; font-size: 16px;
+    border: 3px solid var(--line); border-radius: 16px; background: var(--card);
+    padding: 14px 16px; cursor: pointer; box-shadow: var(--shadow-sm);
+    transition: transform .1s ease, box-shadow .1s ease, background .1s ease;
+  }
+  .choice:hover:not(:disabled) { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--line); }
+  .choice:disabled { cursor: default; }
+  .choice .key { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; border: 2.5px solid var(--line); display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 14px; }
+  .choice .opt { font-family: var(--font-mono); font-size: 17px; }
+  .choice.correct { background: #d7f5e6; border-color: var(--good); }
+  .choice.correct .key { background: var(--good); color: #fff; border-color: var(--good); }
+  .choice.wrong { background: #ffe0dc; border-color: var(--bad); }
+  .choice.wrong .key { background: var(--bad); color: #fff; border-color: var(--bad); }
+  .choice.dim { opacity: .5; }
+
+  .feedback { margin-top: 18px; border: 3px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: none; }
+  .feedback.show { display: block; animation: pop .3s ease; }
+  @keyframes pop { from { transform: scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+  .feedback.right { background: #e6f9f0; }
+  .feedback.incorrect { background: #ffece9; }
+  .feedback .verdict { font-family: var(--font-display); font-weight: 800; font-size: 19px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .feedback .verdict.right { color: var(--good); }
+  .feedback .verdict.incorrect { color: var(--bad); }
+  .feedback .ex-explain { font-size: 14.5px; color: var(--ink); }
+  .feedback .ex-explain .full { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 13.5px; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .feedback-actions { margin-top: 16px; display: flex; justify-content: flex-end; }
+
+  /* ---------- Results ---------- */
+  .result-card { border: 3px solid var(--line); border-radius: var(--radius); background: var(--card); padding: 32px 26px; box-shadow: var(--shadow); text-align: center; }
+  .result-card .grade { font-family: var(--font-display); font-weight: 900; font-size: clamp(56px, 12vw, 96px); line-height: 1; }
+  .result-card .blurb { font-size: 17px; color: var(--ink-soft); margin: 8px 0 4px; }
+  .ring { --p: 0; width: 150px; height: 150px; border-radius: 50%; margin: 4px auto 14px; display: grid; place-items: center; background: conic-gradient(var(--semicolon) calc(var(--p)*1%), #00000012 0); border: 3px solid var(--line); }
+  .ring .inner { width: 112px; height: 112px; border-radius: 50%; background: var(--card); border: 2.5px solid var(--line); display: grid; place-items: center; }
+  .ring .inner b { font-family: var(--font-display); font-size: 34px; font-weight: 900; }
+  .result-stats { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 18px 0 22px; }
+  .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .review-list { margin-top: 26px; text-align: left; }
+  .review-list h3 { font-family: var(--font-display); font-weight: 800; font-size: 22px; margin-bottom: 12px; }
+  .review-item { border: 2.5px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; background: #fff6f4; }
+  .review-item .rs { font-family: var(--font-mono); font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+  .review-item .ans { font-size: 13.5px; } .review-item .ans .ok { color: var(--good); font-weight: 700; } .review-item .ans .no { color: var(--bad); font-weight: 700; text-decoration: line-through; }
+  .review-item .why2 { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+
+  footer { text-align: center; padding: 30px 16px 50px; color: var(--ink-soft); font-size: 13px; }
+  footer b { color: var(--ink); }
+
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand" id="brandHome" title="Home">
+    <span class="marks"><span>,</span><span>;</span><span>:</span><span>—</span></span>
+    <span class="logo">Punctuation&nbsp;<b>Playground</b></span>
+  </div>
+  <nav id="nav">
+    <button class="nav-btn" data-go="home">Home</button>
+    <button class="nav-btn" data-go="study">Study</button>
+    <button class="nav-btn" data-go="practice">Practice</button>
+    <button class="nav-btn" data-go="challenge">Challenge</button>
+  </nav>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view" id="view-home">
+    <div class="hero">
+      <span class="kicker">SAT punctuation · the fun way</span>
+      <h1>Master the <span class="pop c1">comma,</span><br />conquer the <span class="pop c2">colon:</span></h1>
+      <p class="tag">Six marks. One playground. Learn the rules that the SAT loves to test, then prove it in practice or under pressure.</p>
+    </div>
+    <div class="mode-grid">
+      <button class="mode-card study" data-go="study">
+        <span class="emoji">📚</span>
+        <h3>Study</h3>
+        <p>Bite-sized lessons with right-vs-wrong examples and memorable tricks for every mark.</p>
+        <div class="bar"></div>
+      </button>
+      <button class="mode-card practice" data-go="practice">
+        <span class="emoji">✏️</span>
+        <h3>Practice</h3>
+        <p>Relaxed 10-question quizzes with instant feedback and a full explanation each time.</p>
+        <div class="bar"></div>
+      </button>
+      <button class="mode-card challenge" data-go="challenge">
+        <span class="ribbon">timed</span>
+        <span class="emoji">⚡</span>
+        <h3>Challenge</h3>
+        <p>Beat the clock. Build streaks, rack up points, and guard your three lives.</p>
+        <div class="bar"></div>
+      </button>
+    </div>
+    <div class="stats-strip" id="homeStats"></div>
+  </section>
+
+  <!-- STUDY -->
+  <section class="view" id="view-study">
+    <div class="section-head">
+      <h2>Study Hall</h2>
+      <span class="pill" id="studyProgress">0 / 6 studied</span>
+    </div>
+    <div class="topic-tabs" id="topicTabs"></div>
+    <div id="lessonBody"></div>
+    <div class="lesson-nav">
+      <button class="btn" id="prevTopic">← Previous</button>
+      <button class="btn primary" id="nextTopic">Next →</button>
+    </div>
+  </section>
+
+  <!-- QUIZ SETUP -->
+  <section class="view" id="view-setup">
+    <div class="section-head"><h2 id="setupTitle">Practice</h2></div>
+    <div class="setup-panel">
+      <h3 id="setupHeading">Pick your focus</h3>
+      <p class="hint" id="setupHint">Choose a topic or mix them all together.</p>
+      <div class="chip-row" id="topicChips"></div>
+      <button class="btn primary big" id="startQuiz">Start →</button>
+    </div>
+  </section>
+
+  <!-- QUIZ PLAY -->
+  <section class="view" id="view-quiz">
+    <div class="quiz-top">
+      <div class="quiz-meta" id="quizMeta"></div>
+      <button class="btn" id="quitQuiz" style="font-size:14px;padding:8px 16px;">Quit</button>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div id="timerWrap" style="display:none;"><div class="timer-track"><div class="timer-fill" id="timerFill"></div></div></div>
+    <div class="q-card" id="qCard"></div>
+    <div class="feedback" id="feedback"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="view" id="view-results"></section>
+</main>
+
+<footer>
+  Built as a fully self-contained page · <b>Punctuation Playground</b> · Questions are SAT-style, machine-written and independently fact-checked.
+</footer>
+
+<canvas id="confetti"></canvas>
+
+<script type="application/json" id="appdata">{"lessons":{"topics":[{"id":"commas","title":"The Comma","emoji":"✂️","intro":"The comma is the SAT's favorite trap because it does so many jobs. Master a few patterns and you'll catch the test trying to slip in commas where they don't belong (and leave them out where they do).","rules":[{"heading":"Comma + FANBOYS joins two independent clauses","explanation":"When you connect two complete sentences (each with its own subject and verb), put a comma BEFORE the coordinating conjunction (For, And, Nor, But, Or, Yet, So). If only one side is a full sentence, drop the comma.","correct":"The lab ran out of funding, so the researchers paused the experiment.","wrong":"The lab ran out of funding so, the researchers paused the experiment.","why":"The comma belongs before the FANBOYS word, not after it, when two independent clauses are being joined."},{"heading":"Commas separate items in a series","explanation":"Use commas between three or more items in a list. On the SAT, every item must be parallel and separated cleanly, including the comma before the final 'and' (the Oxford comma is accepted).","correct":"She packed pencils, an eraser, a calculator, and her admission ticket.","wrong":"She packed pencils an eraser, a calculator and her admission ticket.","why":"Each item in a list of three or more must be divided by a comma so the items don't run together."},{"heading":"Comma after an introductory element","explanation":"When a sentence opens with an introductory word, phrase, or dependent clause, set it off with a comma before the main clause begins.","correct":"After the storm passed, the volunteers began clearing the road.","wrong":"After the storm passed the volunteers began clearing the road.","why":"A comma signals the end of the introductory material and the start of the main clause."},{"heading":"Commas frame nonessential (parenthetical) information","explanation":"If a phrase can be removed without changing the core meaning, surround it with a PAIR of commas. Essential information that identifies the noun gets no commas. Watch for the SAT giving you only one of the two needed commas.","correct":"My oldest sister, who lives in Denver, is visiting next week.","wrong":"My oldest sister who lives in Denver, is visiting next week.","why":"Nonessential information needs commas on both ends, not just one, to be properly enclosed."},{"heading":"No comma splices","explanation":"A comma alone cannot join two independent clauses. Fix a splice with a period, a semicolon, or a comma plus a FANBOYS conjunction. This is one of the most tested errors on the SAT.","correct":"The deadline was Friday; everyone submitted early.","wrong":"The deadline was Friday, everyone submitted early.","why":"Two complete sentences cannot be linked by a comma by itself, which creates a comma splice."}],"mnemonic":"FANBOYS gets a comma before, never after - and a lone comma can never glue two sentences together."},{"id":"semicolons","title":"The Semicolon","emoji":"🔗","intro":"Think of the semicolon as a soft period: it links two ideas that could each stand alone. The SAT loves to test whether you know it acts just like a period, not like a comma.","rules":[{"heading":"Join two independent clauses","explanation":"A semicolon connects two complete sentences that are closely related. The quick test: if you can swap the semicolon for a period and both halves still work as sentences, the semicolon is correct.","correct":"The experiment failed three times; the team refused to give up.","wrong":"The experiment failed three times; refusing to give up.","why":"Both sides of a semicolon must be complete sentences, and 'refusing to give up' is a fragment."},{"heading":"Semicolon = period for SAT purposes","explanation":"Because a semicolon and a period are interchangeable on the SAT, two answer choices that offer a semicolon and a period cannot both be wrong or both be right. Use that to eliminate.","correct":"Rain delayed the launch; engineers rescheduled it for dawn.","wrong":"Rain delayed the launch, engineers rescheduled it for dawn.","why":"A comma cannot join two independent clauses, but a semicolon (like a period) can."},{"heading":"Don't use a semicolon before a fragment or a list","explanation":"A semicolon cannot introduce a list or attach a dependent phrase; that job belongs to a colon or a comma. The clause after the semicolon must be independent.","correct":"She studied three subjects: biology, chemistry, and physics.","wrong":"She studied three subjects; biology, chemistry, and physics.","why":"Introducing a list requires a colon, because a list is not an independent clause."},{"heading":"Super-commas in complex lists","explanation":"When the items in a list already contain commas, use semicolons to separate the items so the reader doesn't get lost.","correct":"The tour stops in Lima, Peru; Quito, Ecuador; and Bogota, Colombia.","wrong":"The tour stops in Lima, Peru, Quito, Ecuador, and Bogota, Colombia.","why":"Semicolons act as super-commas to divide list items that themselves contain commas."}],"mnemonic":"If a period would work, a semicolon works - it's a period in disguise."},{"id":"colons","title":"The Colon","emoji":"📋","intro":"The colon is a drumroll: it promises that something is coming, like a list, an explanation, or a quote. The catch the SAT tests relentlessly is what has to come BEFORE it.","rules":[{"heading":"A colon needs a complete sentence before it","explanation":"Everything to the LEFT of the colon must be an independent clause that could stand alone. If the left side is a fragment, the colon is wrong.","correct":"She needed three things: courage, coffee, and a calculator.","wrong":"She needed: courage, coffee, and a calculator.","why":"The words before a colon must form a complete sentence, and 'She needed' is incomplete."},{"heading":"Introduce a list","explanation":"Use a colon to launch a list, but only when the lead-in is a full sentence. Don't put a colon right after a verb or preposition that needs its object.","correct":"The recipe calls for three spices: cumin, paprika, and turmeric.","wrong":"The recipe calls for: cumin, paprika, and turmeric.","why":"A colon cannot separate a verb (calls for) from the objects it needs to be a complete thought."},{"heading":"Introduce an explanation or elaboration","explanation":"A colon can set up a clause or phrase that explains or expands on the first part. The right side does NOT need to be a complete sentence.","correct":"He finally understood the lesson: practice beats talent.","wrong":"He finally understood the lesson; practice beats talent every time, which his coach proved.","why":"A colon, not a semicolon, signals that what follows explains the statement before it."},{"heading":"Colon vs. dash to introduce","explanation":"A colon and a single em dash can both introduce a list or explanation after a complete sentence, so on the SAT they're often interchangeable. If both appear as options and only one is allowed elsewhere, check the full-sentence rule.","correct":"There was only one option left: surrender.","wrong":"There was only one option left, surrender.","why":"A comma is too weak to introduce a dramatic explanation; a colon or dash is required."}],"mnemonic":"Cover the colon: if the left side isn't a full sentence, the colon doesn't belong."},{"id":"dashes","title":"The Dash","emoji":"➖","intro":"The em dash is the multitasker of punctuation: it can interrupt, emphasize, or introduce. The SAT mostly tests it in matched pairs and as a stand-in for the colon.","rules":[{"heading":"A pair of dashes sets off a parenthetical","explanation":"Two dashes can frame nonessential information exactly like two commas or two parentheses. The key SAT rule: don't mismatch your punctuation - a dash must pair with a dash, not with a comma.","correct":"The trophy - dusty and dented - still meant everything to her.","wrong":"The trophy - dusty and dented, still meant everything to her.","why":"An interrupting phrase must be closed with the same mark that opened it, dash with dash."},{"heading":"A single dash creates an emphatic break","explanation":"Use one dash to insert a sudden pause or a punchy addition at the end of a sentence. It adds emphasis a comma can't.","correct":"He searched everywhere for the keys - they were in his pocket.","wrong":"He searched everywhere for the keys, they were in his pocket.","why":"A comma creates a splice here, while a dash legitimately joins the dramatic afterthought."},{"heading":"Dash can replace a colon to introduce","explanation":"After a complete sentence, a single dash can introduce a list or explanation just like a colon. This makes them interchangeable in many SAT items.","correct":"The garden had one stubborn problem - weeds.","wrong":"The garden had one stubborn problem; weeds.","why":"A semicolon requires a complete sentence on its right side, but 'weeds' is just a word, so a dash (or colon) is needed."},{"heading":"Don't mix a dash with a comma or colon as a pair","explanation":"When framing a parenthetical, the opening and closing marks must match. The SAT plants answers that open with a dash and close with a comma (or vice versa) to bait you.","correct":"Her plan - bold but risky - won the committee over.","wrong":"Her plan: bold but risky - won the committee over.","why":"Matched bookends are required, so a colon cannot pair with a dash to enclose a phrase."}],"mnemonic":"Dashes travel in matched pairs, and a lone dash is a colon with attitude."},{"id":"apostrophes","title":"The Apostrophe","emoji":"🔑","intro":"Apostrophes show possession or mark a contraction - and they should almost never appear just to make a word plural. The SAT lives for its/it's and your/you're swaps.","rules":[{"heading":"Singular vs. plural possessives","explanation":"Singular nouns add 's. Plural nouns that already end in s add just an apostrophe. The placement of the apostrophe tells you how many owners there are.","correct":"The dog's leash snapped, but the other dogs' leashes held.","wrong":"The dogs' leash snapped when the single dog pulled.","why":"One dog is a singular possessive (dog's); the apostrophe after the s would wrongly signal multiple dogs."},{"heading":"Its vs. it's","explanation":"'It's' is ONLY the contraction for 'it is' or 'it has.' The possessive 'its' has no apostrophe, like his and hers. Test it by expanding to 'it is.'","correct":"The committee changed its policy because it's election season.","wrong":"The committee changed it's policy because its election season.","why":"Possessive 'its' takes no apostrophe, while the contraction 'it's' means 'it is.'"},{"heading":"Your vs. you're (and their/they're/there)","explanation":"'You're' = 'you are'; 'your' shows possession. The same logic applies to they're (they are), their (possessive), and there (place). Expand the contraction to check.","correct":"You're going to need your notes for the exam.","wrong":"Your going to need you're notes for the exam.","why":"The contraction 'you're' means 'you are,' while 'your' marks possession."},{"heading":"No apostrophe for simple plurals","explanation":"Never add an apostrophe just to make a noun plural, including decades and abbreviations. This 'grocer's apostrophe' is a classic SAT wrong answer.","correct":"The CEOs met during the 1990s to discuss the apples on sale.","wrong":"The CEO's met during the 1990's to discuss the apple's on sale.","why":"Plurals are formed by adding s alone; an apostrophe would falsely imply possession or a contraction."}],"mnemonic":"If you can't expand it to 'it is' or 'you are,' the apostrophe is for owning, not for plural-ing."},{"id":"end-punctuation","title":"End Punctuation","emoji":"🛑","intro":"The mark that ends a sentence has to match the sentence's job: a statement gets a period, a real question gets a question mark, and exclamation points are rare. The SAT especially loves disguised questions that are actually statements.","rules":[{"heading":"Period for statements, question mark for direct questions","explanation":"End a declarative sentence with a period. Use a question mark only when the sentence directly ASKS something.","correct":"Where did you put the syllabus?","wrong":"Where did you put the syllabus.","why":"A direct question must end in a question mark, not a period."},{"heading":"Indirect questions take a period","explanation":"A sentence that REPORTS a question rather than asking it is a statement and ends with a period. The SAT often hides a statement that merely mentions a question to bait a question mark.","correct":"She asked where I had put the syllabus.","wrong":"She asked where I had put the syllabus?","why":"This sentence reports a question rather than asking one, so it ends with a period."},{"heading":"Don't let question words fool you","explanation":"Words like who, what, when, where, and why don't automatically make a sentence a question. Check whether the sentence is actually asking or just describing.","correct":"I wonder why the data looks inconsistent.","wrong":"I wonder why the data looks inconsistent?","why":"'I wonder' makes this a statement of curiosity, not a direct question, so no question mark is used."},{"heading":"Use exclamation points sparingly","explanation":"Exclamation points signal strong emotion or emphasis and are almost never the correct, formal SAT choice for ordinary statements. When in doubt, a period is safer.","correct":"The results confirmed our hypothesis.","wrong":"The results confirmed our hypothesis!","why":"A neutral, factual statement calls for a period; an exclamation point adds unwarranted emotion."}],"mnemonic":"If the sentence asks, use a '?'; if it just talks about asking, use a '.'"}]},"questions":[{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"After studying the migration patterns of monarch butterflies for nearly a ___ Dr. Okafor published her findings in a leading journal.","choices":["decade,","decade;","decade","decade:"],"answerIndex":0,"explanation":"A comma correctly separates the introductory dependent/prepositional element ('After studying... a decade') from the main clause. A semicolon (B) is wrong because what precedes it is not an independent clause. No punctuation (C) leaves the long introductory phrase running into the subject. A colon (D) cannot follow an incomplete introductory phrase.","difficulty":"easy"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The committee approved the new budget ___ however, several members questioned whether the funding would arrive in time.","choices":[", ","; "," ",": "],"answerIndex":1,"explanation":"Two independent clauses joined by the conjunctive adverb 'however' require a semicolon before it. A comma (A) creates a comma splice, the classic trap with 'however.' No punctuation (C) fuses the clauses. A colon (D) is wrong because the second clause does not explain or complete the first.","difficulty":"medium"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The novelist's earliest ___ which she later dismissed as juvenile, nonetheless reveals the themes that would define her career.","choices":["manuscripts","manuscripts,","manuscripts;","manuscripts:"],"answerIndex":1,"explanation":"The clause 'which she later dismissed as juvenile' is nonrestrictive and must be set off by paired commas; this blank holds the opening comma. Omitting it (A) breaks the pair already closed later in the sentence. A semicolon (C) cannot introduce a relative clause, and a colon (D) cannot precede 'which' here.","difficulty":"medium"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The expedition reached three notable sites: Tikal, in northern Guatemala; Copán, near the Honduran ___ and Palenque, deep in the Mexican rainforest.","choices":["border,","border;","border","border:"],"answerIndex":1,"explanation":"When list items themselves contain internal commas, semicolons separate the items. Each entry here pairs a place with a descriptive phrase, so a semicolon is needed before the final item. A comma (A) would blur the boundaries between items. No punctuation (C) fuses two list entries; a colon (D) does not separate series items.","difficulty":"hard"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The researchers concluded that the drug reduced ___ but they cautioned that larger trials were still necessary.","choices":["symptoms,","symptoms;","symptoms","symptoms:"],"answerIndex":0,"explanation":"A comma before the coordinating conjunction 'but' correctly joins two independent clauses. A semicolon (B) is incorrect because a coordinating conjunction already follows; you use either a comma plus conjunction or a semicolon alone, not both. No punctuation (C) omits the required comma before 'but.' A colon (D) cannot precede a coordinating conjunction.","difficulty":"easy"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Wind power now supplies a growing share of the region's ___ solar installations remain comparatively rare.","choices":["electricity,","electricity;","electricity","electricity and"],"answerIndex":1,"explanation":"Two complete, closely related independent clauses with no conjunction require a semicolon. A comma (A) produces a comma splice. No punctuation (C) creates a run-on. Option (D) 'electricity and' supplies a coordinating conjunction without the required preceding comma, and it is not a punctuation choice.","difficulty":"medium"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Marie ___ who had spent years analyzing radioactive elements, became the first person to win Nobel Prizes in two sciences.","choices":["Curie","Curie,","Curie;","Curie:"],"answerIndex":1,"explanation":"The nonrestrictive clause beginning 'who had spent years...' must be enclosed in paired commas; the opening comma belongs here. Omitting it (A) leaves the appositive clause unbalanced. A semicolon (C) cannot introduce a dependent 'who' clause, and a colon (D) is wrong before a relative clause.","difficulty":"easy"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The archaeologists catalogued every artifact they ___ moreover, they photographed each one from multiple angles.","choices":["unearthed,","unearthed;","unearthed","unearthed but"],"answerIndex":1,"explanation":"The conjunctive adverb 'moreover' joining two independent clauses requires a preceding semicolon. A comma (A) yields a comma splice. No punctuation (C) creates a fused sentence. 'But' (D) is not punctuation and would contradict the additive meaning of 'moreover.'","difficulty":"medium"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The bakery is known for its dense, buttery ___ flaky almond pastries, and a sourdough that sells out by noon.","choices":["croissants;","croissants","croissants,","croissants:"],"answerIndex":2,"explanation":"Items in a simple series are separated by commas, so a comma follows the first item 'croissants.' A semicolon (A) is reserved for series whose items contain internal commas, which is not the case here. No punctuation (B) merges two list items. A colon (D) cannot appear midlist.","difficulty":"easy"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The senator argued that the policy was ___ effective and that it would pay for itself within five years.","choices":["both","both,","both;","both:"],"answerIndex":0,"explanation":"No punctuation belongs here; 'both effective and that it would pay for itself' continues a single clause, and you should not separate a verb's complement with a comma. A comma (B) wrongly interrupts the predicate. A semicolon (C) or colon (D) cannot fall within this continuous clause.","difficulty":"hard"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Jupiter is the largest planet in the solar ___ it is more than twice as massive as all the other planets combined.","choices":["system,","system;","system","system, and so"],"answerIndex":1,"explanation":"Two independent clauses with no coordinating conjunction take a semicolon. A comma (A) creates a comma splice. No punctuation (C) is a run-on. Option (D) inserts words rather than punctuation and is awkward and ungrammatical as phrased.","difficulty":"easy"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Determined to finish the marathon despite the ___ Lena slowed her pace and focused on her breathing.","choices":["heat","heat,","heat;","heat:"],"answerIndex":1,"explanation":"A comma separates the introductory participial phrase 'Determined to finish... heat' from the main clause. Omitting it (A) runs the modifier into the subject. A semicolon (C) cannot follow a phrase that is not an independent clause, and a colon (D) cannot end an introductory modifier.","difficulty":"medium"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The orchestra rehearsed for ___ the conductor, a notorious perfectionist, demanded that the strings repeat the passage again and again.","choices":["hours,","hours;","hours","hours:"],"answerIndex":1,"explanation":"A semicolon joins two independent clauses, and it is the correct choice even though the second clause contains its own internal commas around the appositive 'a notorious perfectionist.' A comma (A) creates a splice. No punctuation (C) is a run-on. A colon (D) is wrong because the second clause does not function as an explanation or list introduced by the first.","difficulty":"hard"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The startup's chief engineer, who rarely spoke at public ___ delivered a surprisingly candid keynote about the company's failures.","choices":["events","events,","events;","events:"],"answerIndex":1,"explanation":"The nonrestrictive clause 'who rarely spoke at public events' is set off by paired commas; this blank supplies the closing comma before the main verb 'delivered.' Omitting it (A) leaves the interrupting clause unclosed. A semicolon (C) or colon (D) cannot sit between a subject's modifier and its verb.","difficulty":"medium"},{"topic":"semicolons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Critics praised the film's ambitious ___ audiences, however, found its three-hour runtime exhausting.","choices":["score,","score;","score","score and"],"answerIndex":1,"explanation":"Two independent clauses are linked here, with 'however' set off by commas as an interrupter inside the second clause; the join itself requires a semicolon. A comma (A) creates a comma splice. No punctuation (C) is a run-on. 'And' (D) is not punctuation and would still need a preceding comma to join the clauses.","difficulty":"hard"},{"topic":"commas","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The geologist examined the sediment ___ and noted that its layered texture pointed to an ancient lakebed.","choices":["sample,","sample;","sample","sample:"],"answerIndex":2,"explanation":"No punctuation is needed because 'and noted that...' joins a second verb to the same subject (a compound predicate, not two independent clauses), and a comma should not separate compound verbs. A comma (A) wrongly splits the predicate. A semicolon (B) requires two independent clauses, which 'and noted...' is not. A colon (D) cannot precede a coordinating conjunction.","difficulty":"hard"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The committee identified three priorities for the coming fiscal year___ reducing administrative overhead, expanding rural broadband access, and modernizing the payroll system.","choices":[",",":",";","(no punctuation)"],"answerIndex":1,"explanation":"A colon correctly introduces a list after the independent clause 'The committee identified three priorities for the coming fiscal year.' A comma (choice 0) would create a weak, ungrammatical break before a full list; a semicolon (choice 2) is wrong because what follows is not an independent clause.","difficulty":"easy"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"After months of deliberation, the jury reached the verdict everyone had anticipated___ acquittal on all counts.","choices":[";",":",",","(no punctuation)"],"answerIndex":1,"explanation":"A colon properly follows the independent clause and introduces the single appositive 'acquittal on all counts,' which renames 'the verdict.' A semicolon (choice 0) is wrong because 'acquittal on all counts' is not an independent clause, and no punctuation (choice 3) would awkwardly run the noun phrase into the sentence.","difficulty":"medium"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The recipe calls for several uncommon spices, including___ sumac, asafoetida, and grains of paradise.","choices":[":","(no punctuation)",";"," - "],"answerIndex":1,"explanation":"No punctuation is correct because a colon cannot follow 'including,' which leaves the clause grammatically incomplete; the list is the direct object of 'including.' The colon (choice 0) is the classic trap of placing a colon after a preposition or an incomplete construction.","difficulty":"hard"},{"topic":"dashes","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Only one factor explained the startup's collapse___ a sudden loss of investor confidence.","choices":[","," - ",";","(no punctuation)"],"answerIndex":1,"explanation":"A dash correctly introduces the dramatic appositive that follows an independent clause, emphasizing the single factor. A comma (choice 0) is too weak to mark this emphatic break, and a semicolon (choice 2) is wrong because 'a sudden loss of investor confidence' is not an independent clause. (A colon would also work but is not offered.)","difficulty":"medium"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The professor offered a single piece of advice to her graduate students___ read widely before you specialize.","choices":[";",",",":","(no punctuation)"],"answerIndex":2,"explanation":"A colon follows the independent clause and introduces an explanation that elaborates on 'a single piece of advice.' A semicolon (choice 0) is wrong because 'read widely before you specialize,' though independent, is presented as an elaboration the colon must introduce; a comma (choice 1) would create a comma splice.","difficulty":"medium"},{"topic":"dashes","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The expedition's supplies___ ropes, oxygen tanks, and freeze-dried rations___ were carefully rationed for the final ascent.","choices":[" - ___ - ",": ___ :",", ___ :","( ___ ,"],"answerIndex":0,"explanation":"A matched pair of dashes sets off the interrupting list 'ropes, oxygen tanks, and freeze-dried rations' between the subject and verb; dashes are required rather than commas because the interruption contains internal commas. The other options mix incompatible marks; a colon cannot open an interruption that is then closed by a different mark (choices 1 and 2), and you cannot open with a parenthesis and close with a comma (choice 3).","difficulty":"medium"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The argument hinges on a deceptively simple premise___ that human memory is reconstructive rather than reproductive.","choices":[",",":",";","(no punctuation)"],"answerIndex":1,"explanation":"A colon properly introduces the noun clause that defines 'a deceptively simple premise' after a complete independent clause. A comma (choice 0) would be insufficient to introduce this formal elaboration, and a semicolon (choice 2) is wrong because the 'that' clause is not independent.","difficulty":"hard"},{"topic":"dashes","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Hokusai produced thousands of works during his lifetime___ woodblock prints, sketches, paintings___ yet he is remembered chiefly for one image of a wave.","choices":[", ___ ,"," - ___ - ","; ___ ;",": ___ :"],"answerIndex":1,"explanation":"A pair of dashes encloses the parenthetical list of works while preserving the contrast introduced by 'yet.' Dashes are needed here because the interruption itself contains internal commas, so a comma pair (choice 0) would blur the boundaries; semicolons (choice 2) cannot enclose a non-independent list, and a colon pair (choice 3) is not a valid enclosing construction.","difficulty":"hard"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The museum's new wing will feature works by___ Rothko, Pollock, and de Kooning.","choices":[":"," - ","(no punctuation)",";"],"answerIndex":2,"explanation":"No punctuation is correct because the list functions as the object of the preposition 'by,' and the clause is grammatically incomplete before the list. A colon (choice 0) or dash (choice 1) cannot interrupt a preposition from its object.","difficulty":"medium"},{"topic":"dashes","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"She finally admitted the truth___ that she had never actually read the manuscript she had so loudly praised.","choices":[";"," - ",",","(no punctuation)"],"answerIndex":1,"explanation":"A dash effectively introduces the emphatic appositive 'that' clause following the independent clause 'She finally admitted the truth.' A semicolon (choice 0) is incorrect because the 'that' clause is dependent, not independent; a comma (choice 2) is too weak for this appositive elaboration; and no punctuation (choice 3) would awkwardly fuse the clause. (A colon would also work but is not offered.)","difficulty":"medium"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Remember the old surveyor's maxim___ measure twice, cut once.","choices":[",",";",":","(no punctuation)"],"answerIndex":2,"explanation":"A colon follows the independent imperative clause and introduces the maxim it announces. A semicolon (choice 1) cannot be used because 'measure twice, cut once' is a fragment, not an independent clause; a comma (choice 0) would be too weak to introduce the announced saying.","difficulty":"easy"},{"topic":"dashes","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The novel's protagonist___ a disgraced physician seeking redemption in a remote village___ narrates the entire story in retrospect.","choices":[": ___ :"," - ___ - ","; ___ ;",", ___ ;"],"answerIndex":1,"explanation":"A matched pair of dashes sets off the descriptive appositive 'a disgraced physician seeking redemption in a remote village.' The other options use mismatched or invalid enclosing marks; colons (choice 0) and semicolons (choice 2) cannot enclose an appositive, and choice 3 mismatches a comma with a semicolon.","difficulty":"medium"},{"topic":"colons","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The data pointed toward an uncomfortable possibility___ the treatment worked no better than a placebo.","choices":[";",":",",","(no punctuation)"],"answerIndex":1,"explanation":"A colon introduces the independent clause that specifies 'an uncomfortable possibility' after a complete clause. A semicolon (choice 0) is the strongest trap because what follows is independent, but a colon is correct because the second clause specifies and explains the 'possibility' rather than merely being a coordinate, loosely related statement.","difficulty":"hard"},{"topic":"dashes","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"He had everything a young composer could want___ talent, patronage, and ambition___ but he squandered it all within a decade.","choices":[" - ___ - ",", ___ ,",": ___ ;","; ___ ;"],"answerIndex":0,"explanation":"A pair of dashes encloses the list 'talent, patronage, and ambition,' which contains internal commas and is followed by the contrasting clause introduced by 'but.' A comma pair (choice 1) would create confusion with the list's internal commas, and the mixed-mark options (choices 2 and 3) are not valid enclosing pairs.","difficulty":"hard"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"The committee announced that ___ decision to fund the new observatory would be finalized by spring.","choices":["its","it's","its'","its's"],"answerIndex":0,"explanation":"The possessive of 'it' is 'its' with no apostrophe, and the sentence needs a possessive modifying 'decision.' The tempting distractor 'it's' is a contraction of 'it is' and would produce the nonsensical 'it is decision.'","difficulty":"easy"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"After years of research, the biologist concluded that the ___ migration patterns were shifting because of warming oceans.","choices":["whales","whale's","whales'","whales's"],"answerIndex":2,"explanation":"The migration patterns belong to multiple whales, so the plural possessive 'whales'' (apostrophe after the s) is correct. The singular possessive 'whale's' wrongly implies a single whale owns the patterns.","difficulty":"medium"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"The novel explores the friendship between two ___ who meet at a remote research station in Antarctica.","choices":["scientists","scientist's","scientists'","scientist"],"answerIndex":0,"explanation":"The plural noun 'scientists' is needed here with no apostrophe because nothing is being possessed; 'two scientists' is simply a plural. The possessive 'scientists'' incorrectly adds ownership where none exists.","difficulty":"medium"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"Although the proposal was ambitious, the board questioned whether the ___ budget could support it.","choices":["agencys","agency's","agencies'","agencys'"],"answerIndex":1,"explanation":"A single agency owns the budget, so the singular possessive 'agency's' is correct. 'Agencies'' is the plural possessive and wrongly implies multiple agencies, while 'agencys' is not a valid form at all.","difficulty":"medium"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"The teacher reminded the class that ___ going to need their lab goggles for the next experiment.","choices":["their","there","they're","theyre"],"answerIndex":2,"explanation":"The sentence needs the contraction 'they're' meaning 'they are going to need.' The possessive 'their' and the locational 'there' are common homophone traps that do not fit the verb slot.","difficulty":"easy"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"The two ___ rivalry dominated the chess world for nearly a decade before either retired.","choices":["champions","champion's","champions'","champions's"],"answerIndex":2,"explanation":"The rivalry belongs jointly to two champions, so the plural possessive 'champions'' is correct. The singular 'champion's' contradicts 'two,' and 'champions' alone supplies no possessive.","difficulty":"hard"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"She argued that the painting was clearly ___ best work, far superior to anything he produced later.","choices":["the artists","the artist's","the artists'","the artist"],"answerIndex":1,"explanation":"A single artist owns the 'best work,' so the singular possessive 'the artist's' is correct. The plural possessive 'the artists'' wrongly suggests several artists share one best work.","difficulty":"medium"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"The mayor insisted that the city ___ done everything possible to prepare for the storm.","choices":["whose","who's","whos","whose'"],"answerIndex":1,"explanation":"The slot needs the contraction 'who's' meaning 'the city who has done everything possible.' The possessive 'whose' cannot stand in for 'who has,' which is the trap test-takers fall for.","difficulty":"hard"},{"topic":"apostrophes","prompt":"Choose the option that correctly completes the sentence.","sentence":"The museum displays several ___ from the 1920s alongside detailed historical placards.","choices":["photographs","photograph's","photographs'","photographes"],"answerIndex":0,"explanation":"A simple plural 'photographs' is needed because nothing is possessed. 'Photograph's' is a singular possessive that introduces ownership the sentence does not call for.","difficulty":"easy"},{"topic":"end-punctuation","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The researchers wondered how the ancient builders had moved such enormous stones without modern machinery___","choices":[".","?","!",","],"answerIndex":0,"explanation":"This is an indirect question reporting that the researchers wondered something; it is a statement and takes a period. A question mark is wrong because the sentence does not directly ask a question.","difficulty":"medium"},{"topic":"end-punctuation","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"Could the newly discovered fossil finally settle the long-running debate about the origins of flight___","choices":[".","?","!",":"],"answerIndex":1,"explanation":"This is a direct question, signaled by the inverted structure 'Could the fossil settle,' so it requires a question mark. A period would be wrong because the sentence genuinely poses a question rather than reporting one.","difficulty":"easy"},{"topic":"end-punctuation","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The professor asked whether anyone in the lecture hall had ever read the original manuscript___","choices":["?",".","!",";"],"answerIndex":1,"explanation":"Although it contains 'asked,' this is an indirect question embedded in a declarative statement, so it ends with a period. The question mark is the trap, set by the verb 'asked' and the word 'whether.'","difficulty":"hard"},{"topic":"end-punctuation","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The astronomers carefully recalibrated the telescope before the rare planetary alignment began___","choices":["?",".","!",","],"answerIndex":1,"explanation":"This is a straightforward declarative statement and takes a period. The exclamation point would impose an unwarranted emotional emphasis that the neutral, factual tone does not support.","difficulty":"easy"},{"topic":"end-punctuation","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"What an extraordinary discovery the deep-sea expedition turned out to be___","choices":[".","?","!",";"],"answerIndex":2,"explanation":"Beginning with 'What an extraordinary,' this is an exclamatory sentence conveying strong feeling, so it takes an exclamation point. A question mark is the trap because 'What' often opens questions, but here there is no interrogative word order.","difficulty":"medium"},{"topic":"end-punctuation","prompt":"Choose the punctuation that correctly completes the sentence.","sentence":"The committee debated for hours whether the new policy would actually reduce emissions or simply shift them elsewhere___","choices":["?",".","!",":"],"answerIndex":1,"explanation":"The clause beginning with 'whether' is an indirect question functioning as the object of 'debated,' so the full sentence is declarative and ends with a period. The question mark wrongly treats the embedded 'whether' clause as a direct question.","difficulty":"hard"}]}</script>
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById('appdata').textContent);
+
+const TOPIC_META = {
+  'commas':         { label: 'Commas',       short: 'Comma',       mark: ',',  color: 'var(--comma)' },
+  'semicolons':     { label: 'Semicolons',   short: 'Semicolon',   mark: ';',  color: 'var(--semicolon)' },
+  'colons':         { label: 'Colons',       short: 'Colon',       mark: ':',  color: 'var(--colon)' },
+  'dashes':         { label: 'Dashes',       short: 'Dash',        mark: '—',  color: 'var(--dash)' },
+  'apostrophes':    { label: 'Apostrophes',  short: 'Apostrophe',  mark: '’', color: 'var(--apostrophe)' },
+  'end-punctuation':{ label: 'End marks',    short: 'End mark',     mark: '?',  color: 'var(--end-punctuation)' },
+};
+const TOPIC_ORDER = DATA.lessons.topics.map(t => t.id);
+
+/* ---------- storage ---------- */
+const STORE = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v===null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+};
+let studied = new Set(STORE.get('pp_studied', []));
+
+/* ---------- helpers ---------- */
+const $ = sel => document.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function fillText(t){ return t.trim() === '(no punctuation)' ? '' : t; }
+function choiceLabel(t){ return t.includes('___') ? t.replace(/___/g, '…') : t; }
+
+/* render sentence with empty gaps */
+function sentenceGaps(sentence){
+  const parts = sentence.split('___');
+  return parts.map((p,i)=> esc(p) + (i < parts.length-1 ? '<span class="gap"></span>' : '')).join('');
+}
+/* render sentence with a choice filled in */
+function sentenceFilled(sentence, choice){
+  const parts = sentence.split('___');
+  const fills = choice.split('___');
+  let html = '';
+  parts.forEach((p,i)=>{
+    html += esc(p);
+    if(i < parts.length-1){
+      const f = fillText(fills[i] !== undefined ? fills[i] : '');
+      html += '<span class="fill">' + esc(f) + '</span>';
+    }
+  });
+  return html;
+}
+
+/* ---------- routing ---------- */
+const VIEWS = ['home','study','setup','quiz','results'];
+function show(view){
+  VIEWS.forEach(v => $('#view-'+v).classList.toggle('active', v===view));
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    const go = b.dataset.go;
+    const on = (go===view) || (view==='setup' && quiz.mode===go) || (view==='quiz' && quiz.mode===go);
+    b.classList.toggle('active', on);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function go(dest){
+  if(dest==='home'){ renderHome(); show('home'); }
+  else if(dest==='study'){ renderStudy(); show('study'); }
+  else if(dest==='practice'){ openSetup('practice'); }
+  else if(dest==='challenge'){ openSetup('challenge'); }
+}
+document.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', ()=>go(el.dataset.go)));
+$('#brandHome').addEventListener('click', ()=>go('home'));
+
+/* ---------- HOME ---------- */
+function renderHome(){
+  const best = STORE.get('pp_challenge_best', 0);
+  const pbest = STORE.get('pp_practice_best', 0);
+  $('#homeStats').innerHTML = `
+    <div class="stat"><div class="num">${studied.size}/6</div><div class="lbl">Lessons studied</div></div>
+    <div class="stat"><div class="num">${pbest}%</div><div class="lbl">Best practice</div></div>
+    <div class="stat"><div class="num">${best}</div><div class="lbl">Challenge high score</div></div>
+  `;
+}
+
+/* ---------- STUDY ---------- */
+let currentTopicIdx = 0;
+function renderStudy(){
+  const tabs = TOPIC_ORDER.map((id,i)=>{
+    const m = TOPIC_META[id];
+    return `<button class="topic-tab ${i===currentTopicIdx?'active':''} ${studied.has(id)?'done':''}" data-ti="${i}"
+      style="${i===currentTopicIdx?`background:${m.color};border-color:var(--line);`:''}">
+      <span class="dot" style="background:${m.color}"></span>${m.label}<span class="check">✓</span></button>`;
+  }).join('');
+  $('#topicTabs').innerHTML = tabs;
+  document.querySelectorAll('.topic-tab').forEach(b=> b.addEventListener('click', ()=>{ currentTopicIdx = +b.dataset.ti; renderStudy(); }));
+  $('#studyProgress').textContent = `${studied.size} / 6 studied`;
+
+  const topic = DATA.lessons.topics[currentTopicIdx];
+  const m = TOPIC_META[topic.id];
+  const rules = topic.rules.map((r,i)=>`
+    <div class="rule-card">
+      <h4><span class="rule-num" style="background:${m.color}">${i+1}</span>${esc(r.heading)}</h4>
+      <p class="explain">${esc(r.explanation)}</p>
+      <div class="examples">
+        <div class="ex good"><span class="ex-tag">✓ correct</span>${esc(r.correct)}</div>
+        <div class="ex bad"><span class="ex-tag">✗ wrong</span>${esc(r.wrong)}</div>
+      </div>
+      <div class="why"><b>Why:</b><span>${esc(r.why)}</span></div>
+    </div>`).join('');
+
+  $('#lessonBody').innerHTML = `
+    <div class="lesson-head" style="background:linear-gradient(120deg, ${m.color}22, var(--card));">
+      <span class="big-mark" style="color:${m.color}">${esc(m.mark)}</span>
+      <div class="lh-text">
+        <h3>${esc(topic.title)} ${esc(topic.emoji)}</h3>
+        <p>${esc(topic.intro)}</p>
+      </div>
+    </div>
+    ${rules}
+    <div class="mnemonic">
+      <span class="bulb">💡</span>
+      <div class="mtext"><b>Remember:</b> ${esc(topic.mnemonic)}</div>
+    </div>`;
+
+  // mark as studied
+  if(!studied.has(topic.id)){ studied.add(topic.id); STORE.set('pp_studied', [...studied]); }
+
+  $('#prevTopic').disabled = currentTopicIdx===0;
+  $('#nextTopic').textContent = currentTopicIdx===TOPIC_ORDER.length-1 ? 'Finish ✓' : 'Next →';
+}
+$('#prevTopic').addEventListener('click', ()=>{ if(currentTopicIdx>0){ currentTopicIdx--; renderStudy(); } });
+$('#nextTopic').addEventListener('click', ()=>{
+  if(currentTopicIdx < TOPIC_ORDER.length-1){ currentTopicIdx++; renderStudy(); }
+  else { go('practice'); }
+});
+
+/* ---------- QUIZ ---------- */
+const quiz = { mode:'practice', topic:'all', queue:[], idx:0, answered:false,
+  correct:0, total:0, streak:0, bestStreak:0, lives:3, points:0, missed:[], timer:null, timeLeft:0 };
+const ROUND_SIZE = 10;
+const TIME_PER_Q = 15;
+
+function openSetup(mode){
+  quiz.mode = mode;
+  quiz.topic = 'all';
+  $('#setupTitle').textContent = mode==='practice' ? 'Practice' : 'Challenge';
+  $('#setupHeading').textContent = mode==='practice' ? 'Pick your focus' : 'Choose your arena';
+  $('#setupHint').textContent = mode==='practice'
+    ? 'Ten questions, instant feedback, full explanations. No pressure.'
+    : '15 seconds a question · 3 lives · build your streak for bonus points.';
+  const chips = [`<button class="chip active" data-topic="all"><span class="dot" style="background:linear-gradient(45deg,var(--comma),var(--colon))"></span>All topics</button>`]
+    .concat(TOPIC_ORDER.map(id=>{
+      const m = TOPIC_META[id];
+      return `<button class="chip" data-topic="${id}"><span class="dot" style="background:${m.color}"></span>${m.label}</button>`;
+    })).join('');
+  $('#topicChips').innerHTML = chips;
+  document.querySelectorAll('#topicChips .chip').forEach(c=> c.addEventListener('click', ()=>{
+    document.querySelectorAll('#topicChips .chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active'); quiz.topic = c.dataset.topic;
+  }));
+  show('setup');
+}
+$('#startQuiz').addEventListener('click', startQuiz);
+
+function poolFor(topic){
+  const pool = topic==='all' ? DATA.questions : DATA.questions.filter(q=>q.topic===topic);
+  return shuffle(pool);
+}
+function startQuiz(){
+  let pool = poolFor(quiz.topic);
+  quiz.queue = quiz.mode==='practice' ? pool.slice(0, ROUND_SIZE) : pool;
+  quiz.idx = 0; quiz.correct = 0; quiz.total = quiz.queue.length; quiz.streak = 0; quiz.bestStreak = 0;
+  quiz.lives = 3; quiz.points = 0; quiz.missed = []; quiz.answered = false;
+  $('#timerWrap').style.display = quiz.mode==='challenge' ? 'block' : 'none';
+  show('quiz');
+  renderQuestion();
+}
+$('#quitQuiz').addEventListener('click', ()=>{ stopTimer(); go('home'); });
+
+function renderMeta(){
+  const total = quiz.mode==='practice' ? quiz.total : quiz.queue.length;
+  let html = `<span class="pill score">⭐ ${quiz.mode==='challenge' ? quiz.points : quiz.correct + (quiz.mode==='practice'?'/'+total:'')}</span>`;
+  if(quiz.mode==='challenge'){
+    html += `<span class="pill lives">❤ ${'●'.repeat(quiz.lives)}${'○'.repeat(3-quiz.lives)}</span>`;
+    html += `<span class="pill streak">🔥 ${quiz.streak}</span>`;
+  } else {
+    html += `<span class="pill">Q ${Math.min(quiz.idx+1, quiz.total)} / ${quiz.total}</span>`;
+  }
+  $('#quizMeta').innerHTML = html;
+}
+
+function renderQuestion(){
+  quiz.answered = false;
+  $('#feedback').className = 'feedback';
+  $('#feedback').innerHTML = '';
+  renderMeta();
+
+  if(quiz.mode==='practice'){
+    $('#progressFill').style.width = (quiz.idx/quiz.total*100)+'%';
+  } else {
+    $('#progressFill').style.width = '100%';
+    $('#progressFill').style.background = 'var(--comma)';
+  }
+
+  const q = quiz.queue[quiz.idx];
+  const m = TOPIC_META[q.topic];
+  const choicesHtml = q.choices.map((c,i)=>`
+    <button class="choice" data-ci="${i}">
+      <span class="key">${i+1}</span>
+      <span class="opt">${esc(choiceLabel(c))}</span>
+    </button>`).join('');
+  $('#qCard').innerHTML = `
+    <span class="q-topic-badge" style="background:${m.color}">${m.mark} ${esc(m.label)} · ${esc(q.difficulty)}</span>
+    <div class="q-prompt">${esc(q.prompt)}</div>
+    <div class="q-sentence">${sentenceGaps(q.sentence)}</div>
+    <div class="choices">${choicesHtml}</div>`;
+  document.querySelectorAll('#qCard .choice').forEach(b=> b.addEventListener('click', ()=>answer(+b.dataset.ci)));
+
+  if(quiz.mode==='challenge') startTimer();
+}
+
+/* timer */
+function startTimer(){
+  stopTimer();
+  quiz.timeLeft = TIME_PER_Q;
+  const fill = $('#timerFill');
+  fill.classList.remove('low');
+  fill.style.transition = 'none'; fill.style.width = '100%';
+  void fill.offsetWidth;
+  fill.style.transition = 'width 1s linear';
+  fill.style.width = '0%';
+  quiz.timer = setInterval(()=>{
+    quiz.timeLeft--;
+    if(quiz.timeLeft <= 5) fill.classList.add('low');
+    if(quiz.timeLeft <= 0){ stopTimer(); answer(-1); }
+  }, 1000);
+}
+function stopTimer(){ if(quiz.timer){ clearInterval(quiz.timer); quiz.timer = null; } }
+
+function answer(ci){
+  if(quiz.answered) return;
+  quiz.answered = true;
+  stopTimer();
+  const q = quiz.queue[quiz.idx];
+  const correct = ci === q.answerIndex;
+  const timedOut = ci === -1;
+
+  document.querySelectorAll('#qCard .choice').forEach((b,i)=>{
+    b.disabled = true;
+    if(i === q.answerIndex) b.classList.add('correct');
+    else if(i === ci) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  if(correct){
+    quiz.correct++; quiz.streak++; quiz.bestStreak = Math.max(quiz.bestStreak, quiz.streak);
+    if(quiz.mode==='challenge'){
+      const timeBonus = quiz.timeLeft * 5;
+      const streakBonus = (quiz.streak-1) * 10;
+      quiz.points += 100 + timeBonus + streakBonus;
+    }
+    burst();
+  } else {
+    quiz.streak = 0;
+    quiz.missed.push({ q, chosen: ci });
+    if(quiz.mode==='challenge') quiz.lives--;
+  }
+  renderMeta();
+  showFeedback(q, ci, correct, timedOut);
+}
+
+function showFeedback(q, ci, correct, timedOut){
+  const fb = $('#feedback');
+  fb.className = 'feedback show ' + (correct ? 'right' : 'incorrect');
+  const verdict = correct ? 'Nice! ✓' : (timedOut ? "Time's up! ⏱" : 'Not quite ✗');
+  const isLast = quiz.idx >= quiz.queue.length-1;
+  const dead = quiz.mode==='challenge' && quiz.lives<=0;
+  const nextLabel = (dead || isLast) ? 'See results →' : 'Next →';
+  fb.innerHTML = `
+    <div class="verdict ${correct?'right':'incorrect'}">${verdict}</div>
+    <div class="ex-explain">${esc(q.explanation)}
+      <span class="full">${sentenceFilled(q.sentence, q.choices[q.answerIndex])}</span>
+    </div>
+    <div class="feedback-actions"><button class="btn primary" id="nextQ">${nextLabel}</button></div>`;
+  $('#nextQ').focus();
+  $('#nextQ').addEventListener('click', nextQuestion);
+}
+
+function nextQuestion(){
+  const dead = quiz.mode==='challenge' && quiz.lives<=0;
+  if(dead || quiz.idx >= quiz.queue.length-1){ finishQuiz(); return; }
+  quiz.idx++;
+  renderQuestion();
+}
+
+/* keyboard */
+document.addEventListener('keydown', e=>{
+  if(!$('#view-quiz').classList.contains('active')) return;
+  if(!quiz.answered && /^[1-4]$/.test(e.key)){
+    const btn = document.querySelector(`#qCard .choice[data-ci="${+e.key-1}"]`);
+    if(btn) btn.click();
+  } else if(quiz.answered && (e.key==='Enter' || e.key===' ')){
+    e.preventDefault();
+    const n = $('#nextQ'); if(n) n.click();
+  }
+});
+
+/* ---------- RESULTS ---------- */
+function finishQuiz(){
+  stopTimer();
+  const answered = quiz.correct + quiz.missed.length;
+  const pct = answered ? Math.round(quiz.correct/answered*100) : 0;
+  let grade, blurb;
+  if(quiz.mode==='practice'){
+    const prevBest = STORE.get('pp_practice_best', 0);
+    if(pct > prevBest) STORE.set('pp_practice_best', pct);
+    if(pct===100){ grade='💯'; blurb='Flawless. The punctuation marks bow to you.'; }
+    else if(pct>=80){ grade='🌟'; blurb='Excellent - you really know your marks.'; }
+    else if(pct>=60){ grade='👍'; blurb='Solid. A little review and you’ll nail it.'; }
+    else { grade='🌱'; blurb='Good start - revisit Study Hall and try again.'; }
+  } else {
+    const prevBest = STORE.get('pp_challenge_best', 0);
+    const isRecord = quiz.points > prevBest;
+    if(isRecord) STORE.set('pp_challenge_best', quiz.points);
+    grade = isRecord ? '🏆' : '⚡';
+    blurb = isRecord ? 'New high score! You crushed it.' : `Best streak: ${quiz.bestStreak} · High score to beat: ${prevBest}`;
+  }
+
+  const scoreLine = quiz.mode==='challenge'
+    ? `<div class="grade">${grade}</div><div class="blurb">${esc(blurb)}</div>
+       <div class="result-stats">
+         <div class="stat"><div class="num">${quiz.points}</div><div class="lbl">Points</div></div>
+         <div class="stat"><div class="num">${quiz.correct}</div><div class="lbl">Correct</div></div>
+         <div class="stat"><div class="num">${quiz.bestStreak}</div><div class="lbl">Best streak</div></div>
+       </div>`
+    : `<div class="ring" style="--p:${pct}"><div class="inner"><b>${pct}%</b></div></div>
+       <div class="grade" style="font-size:40px">${grade}</div><div class="blurb">${esc(blurb)}</div>
+       <div class="result-stats">
+         <div class="stat"><div class="num">${quiz.correct}/${answered}</div><div class="lbl">Correct</div></div>
+         <div class="stat"><div class="num">${quiz.bestStreak}</div><div class="lbl">Best streak</div></div>
+       </div>`;
+
+  let review = '';
+  if(quiz.missed.length){
+    review = `<div class="review-list"><h3>Let’s review the misses 🔍</h3>` +
+      quiz.missed.map(({q,chosen})=>{
+        const yourAns = chosen===-1 ? '(ran out of time)' : choiceLabel(q.choices[chosen]);
+        return `<div class="review-item">
+          <div class="rs">${sentenceFilled(q.sentence, q.choices[q.answerIndex])}</div>
+          <div class="ans">Correct: <span class="ok">${esc(choiceLabel(q.choices[q.answerIndex]))}</span>
+             &nbsp;·&nbsp; You: <span class="no">${esc(yourAns)}</span></div>
+          <div class="why2">${esc(q.explanation)}</div>
+        </div>`;
+      }).join('') + `</div>`;
+  } else {
+    review = `<div class="review-list"><h3 style="text-align:center">No misses to review - spotless! ✨</h3></div>`;
+  }
+
+  $('#view-results').innerHTML = `
+    <div class="result-card">
+      ${scoreLine}
+      <div class="result-actions">
+        <button class="btn primary big" id="againBtn">Play again</button>
+        <button class="btn big" id="switchBtn">${quiz.mode==='practice'?'Try Challenge ⚡':'Try Practice ✏️'}</button>
+        <button class="btn big" id="homeBtn">Home</button>
+      </div>
+      ${review}
+    </div>`;
+  show('results');
+  if(quiz.mode==='practice' && pct>=80 || quiz.mode==='challenge' && quiz.points>0) bigBurst();
+  $('#againBtn').addEventListener('click', ()=>openSetup(quiz.mode));
+  $('#switchBtn').addEventListener('click', ()=>openSetup(quiz.mode==='practice'?'challenge':'practice'));
+  $('#homeBtn').addEventListener('click', ()=>go('home'));
+}
+
+/* ---------- confetti ---------- */
+const cv = $('#confetti'), ctx = cv.getContext('2d');
+let parts = [], raf = null;
+function resize(){ cv.width = innerWidth; cv.height = innerHeight; }
+resize(); addEventListener('resize', resize);
+const COLORS = ['#ff6b5e','#12a594','#7c5cff','#ff9f1c','#2f80ed','#2bb673','#ffd23f'];
+function spawn(n, originY){
+  for(let i=0;i<n;i++){
+    parts.push({
+      x: innerWidth/2 + (Math.random()-0.5)*innerWidth*0.5,
+      y: originY!==undefined ? originY : innerHeight*0.35,
+      vx: (Math.random()-0.5)*9,
+      vy: Math.random()*-11 - 5,
+      g: 0.32 + Math.random()*0.18,
+      s: 6 + Math.random()*8,
+      rot: Math.random()*6.28,
+      vr: (Math.random()-0.5)*0.4,
+      c: COLORS[Math.floor(Math.random()*COLORS.length)],
+      life: 90 + Math.random()*40,
+      shape: Math.random()<0.5?'rect':'circle'
+    });
+  }
+  if(!raf) raf = requestAnimationFrame(tick);
+}
+function tick(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  parts = parts.filter(p=>p.life>0);
+  parts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=p.g; p.rot+=p.vr; p.life--;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.c; ctx.globalAlpha = Math.max(0, Math.min(1, p.life/40));
+    if(p.shape==='rect') ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);
+    else { ctx.beginPath(); ctx.arc(0,0,p.s/2,0,6.28); ctx.fill(); }
+    ctx.restore();
+  });
+  if(parts.length) raf = requestAnimationFrame(tick);
+  else { cancelAnimationFrame(raf); raf=null; ctx.clearRect(0,0,cv.width,cv.height); }
+}
+function burst(){ spawn(28); }
+function bigBurst(){ spawn(120, innerHeight*0.3); }
+
+/* ---------- boot ---------- */
+renderHome();
+show('home');
+</script>
+</body>
+</html>
